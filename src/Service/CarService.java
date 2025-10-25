@@ -2,7 +2,6 @@ package Service;
 
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
@@ -17,8 +16,10 @@ public class CarService {
 
     public CarService() {
         this.cars = new ArrayList<>();
-        
-        try {
+    }
+
+    public void loadAllCars(){
+                try {
             var lines= Files.readAllLines(Paths.get("../cars.txt"));
             lines.forEach((line)->{
                 var c = line.split(",");
@@ -35,7 +36,6 @@ public class CarService {
             System.out.println("ERROR: "+ e);
         }
     }
-
     public  void getCars(){
         cars.forEach(c-> System.out.println(c));
     }
@@ -55,51 +55,33 @@ public class CarService {
         }
     }
 
-    public  void deleteCar(String serial)throws IOException{
-        var carFound = getCarBySerial(serial);
-        if (carFound.isPresent()) {
-           cars.remove(carFound);
-           saveAllCars();
-        }else{
-            System.out.println("No se ha encontrado el serial");
-        }
+public void deleteCar(String serial){
+    var carFound = getCarBySerial(serial);
+    if (carFound.isPresent()) {
+        cars.remove(carFound.get());
+        saveAllCars();
+        System.out.println("Carro eliminado correctamente.");
+    } else {
+        System.out.println("No se ha encontrado el serial");
     }
+}
+
+public void saveAllCars() {
+      try {
+        var content = new StringBuilder();
+        cars.forEach(c-> content.append(c.toString() + System.lineSeparator()));
+
+        Files.writeString(Paths.get("../cars.txt"), content.toString());
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+}
 
     public void saveCar(Car car){
-        try {
-        var line = String.join(",",
-        car.getModel(),
-        String.valueOf(car.getYear()),
-        car.getSerial(),
-        String.valueOf(car.getPrice())
-    );
-
-        Files.writeString(Paths.get("../cars.txt"), line, 
-                StandardOpenOption.CREATE, StandardOpenOption.APPEND);
-
-            System.out.println("Carro agregado exitosament");
-
-        } catch (IOException e) {
-            System.out.println("Error: " + e);
-        }
+       try {
+        Files.writeString(Paths.get("../cars.txt"),car.toString(),StandardOpenOption.APPEND);
+       } catch (IOException e) {
+        System.out.println("ERROR: " +e);
+       }
     }
-
-    public void saveAllCars()throws IOException{
-        
-            cars.forEach((c)->{
-                var line = String.join(",",
-                c.getModel(),
-                String.valueOf(c.getYear()),
-                c.getSerial(),
-                String.valueOf(c.getPrice())
-    );
-                
-            try {
-                Files.writeString(Paths.get("../cars.txt"), line, StandardOpenOption.CREATE_NEW, StandardOpenOption.APPEND);
-            } catch (IOException e) {
-                System.out.println(e);
-            }
-
-            });
-        }
     }

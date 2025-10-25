@@ -9,8 +9,10 @@ public class App {
     private static CarService carService= new CarService();
     public static void main(String[] args) throws Exception {
         boolean salir = false;
-
+          carService.loadAllCars();
         do {
+          
+
                     System.out.println("""
             ==== LOTE====
             1. ver carros
@@ -41,7 +43,7 @@ public class App {
             sc.nextLine();
             System.out.println("INgrese el serial");
             var serial = sc.nextLine();
-                System.err.println(carService.getCarBySerial(serial));
+                System.out.println(carService.getCarBySerial(serial));
                 break;
             case 4:
             sc.nextLine();
@@ -50,6 +52,8 @@ public class App {
             carService.deleteCar(serial1);
             break;
             case 0:
+             System.out.println("Saliendo .....");
+            salir = true;
             default:
             System.out.println("Opcion invalida");
                 break;
